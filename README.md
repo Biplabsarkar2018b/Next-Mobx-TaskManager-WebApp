@@ -1,3 +1,11 @@
+Task Managment App, technologies used : NextJS, MST, Tailwind
+Made By Biplab Sarkar
+
+Live :
+```bash 
+https://taskmanagement-jade.vercel.app/
+```
+
 
 Install The dependecies first:
 ```bash

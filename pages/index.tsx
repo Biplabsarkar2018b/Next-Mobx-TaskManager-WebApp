@@ -1,6 +1,6 @@
 import TaskCard from "./components/TaskCard";
 import React, { useEffect, useState } from "react";
-import { useTodos } from "./store/store";
+import { useTodos } from "../store/store";
 import { Instance } from "mobx-state-tree";
 
 interface Todo {
