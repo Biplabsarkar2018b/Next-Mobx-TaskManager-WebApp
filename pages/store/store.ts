@@ -2,6 +2,8 @@ import { types, Instance } from "mobx-state-tree";
 
 const TODO_STORE_KEY = "todoStore";
 
+// task model
+
 export const TodoModel = types.model("TodoModel", {
   id: types.identifier,
   name: types.string,
@@ -9,6 +11,8 @@ export const TodoModel = types.model("TodoModel", {
   status: types.optional(types.string, "ToDo"),
 });
 
+
+// task store
 export const TodoStore = types
   .model("TodoStore", {
     todos: types.array(TodoModel),
@@ -17,6 +21,13 @@ export const TodoStore = types
     addTodo(newTodo: Instance<typeof TodoModel>) {
       store.todos.push(newTodo);
       saveTodoStore();
+    },
+    changeStatus(id: string, newStatus: string) {
+      const todo = store.todos.find((todo) => todo.id === id);
+      if (todo) {
+        todo.status = newStatus;
+        saveTodoStore();
+      }
     },
     updateTodo(updatedTodo: Instance<typeof TodoModel>) {
       const index = store.todos.findIndex((todo) => todo.id === updatedTodo.id);
@@ -50,6 +61,8 @@ export const TodoStore = types
     },
   }));
 
+
+  //if store was not there before then we will assign an empty store and load it
 let _todoStore: Instance<typeof TodoStore>;
 
 export const useTodos = () => {
@@ -59,7 +72,7 @@ export const useTodos = () => {
   }
   return _todoStore;
 };
-
+//storing the data locally
 const saveTodoStore = () => {
   try {
     const json = JSON.stringify(_todoStore.todos);
@@ -68,7 +81,7 @@ const saveTodoStore = () => {
     console.error("Failed to save TodoStore to localStorage:", error);
   }
 };
-
+// loading the data from local storage
 const loadTodoStore = (): Instance<typeof TodoStore> | null => {
   try {
     const json = localStorage.getItem(TODO_STORE_KEY);

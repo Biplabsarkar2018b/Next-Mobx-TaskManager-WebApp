@@ -10,12 +10,17 @@ interface Todo {
   status: string;
 }
 
+const IN_PROGRESS = "In Progress";
+const DONE = "Completed";
+const TODO = "ToDo";
+
 export default function Home() {
   const todoStore = useTodos();
 
   const [data, setData] = useState<Todo[]>([]);
   const [isShow, setIsShow] = useState(false);
   const [name, setName] = useState("");
+  const [showTags, setShowTags] = useState(true);
   const [description, setDescription] = useState("");
   const [error, setError] = useState(false);
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
@@ -66,12 +71,36 @@ export default function Home() {
     todoStore.deleteTodoById(id);
     setData(todoStore.getTodoList());
   };
+  const handleDoing = (id: string) => {
+    todoStore.changeStatus(id, IN_PROGRESS);
+    setData(todoStore.getTodoList());
+  };
+  const handleDone = (id: string) => {
+    todoStore.changeStatus(id, DONE);
+    setData(todoStore.getTodoList());
+  };
   useEffect(() => {
     setData(todoStore.getTodoList());
   }, [todoStore.getLength()]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowTags(false);
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <div className="relative">
+      <div
+        className={`flex md:hidden text-white bg-black w-screen justify-center ${
+          showTags ? "" : "hidden"
+        }`}
+      >
+        <p>Right Swipe to Delete |</p>
+        <p>Left Swipe to Complete</p>
+      </div>
       {isShow && (
         <div className="bg-white shadow-md rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-4">
@@ -141,8 +170,17 @@ export default function Home() {
             status={item.status}
             onEdit={() => handleEdit(item.id)}
             onDelete={() => handleDelete(item.id)}
+            onDoing={() => handleDoing(item.id)}
+            onDone={() => handleDone(item.id)}
           />
         ))}
+      {data.length==0 && (
+        <div className="flex justify-center items-center">
+          <h1 className="text-3xl font-bold">
+          No Task Here, Add Task By Clicking on the add icon at bottom right corner
+        </h1>
+        </div>
+      )}
     </div>
   );
 }
